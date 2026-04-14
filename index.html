@@ -1,110 +1,352 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="UTF-8">
-<title>For My Favorite Human 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>For My Favorite Human 💖</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comic Sans MS', cursive;
+      text-align: center;
+      background: linear-gradient(135deg, #ffd6ec, #e0c3fc, #c3f0ff);
+      touch-action: manipulation;
+      overflow-x: hidden;
+    }
 
-<style>
-body {
-  margin: 0;
-  font-family: 'Comic Sans MS', cursive;
-  text-align: center;
-  background: linear-gradient(135deg, #ffd6ec, #e0c3fc, #c3f0ff);
-  touch-action: manipulation;
+    .hidden { display: none; }
+
+    button {
+      padding: 14px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      background: #ff85a2;
+      color: white;
+      margin: 5px;
+    }
+
+    #noBtn, #noBtn2 { position: absolute; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 300px;
+      margin: auto;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .card {
+      aspect-ratio: 1/1;
+      font-size: 24px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    #game3 {
+      position: relative;
+      height: 400px;
+      background: #fff;
+      overflow: hidden;
+      margin: 20px;
+      border: 2px solid #ff85a2;
+      touch-action: none;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 35px;
+    }
+
+    .falling {
+      position: absolute;
+      top: 0;
+      font-size: 30px;
+    }
+
+    #final {
+      background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #letter {
+      text-align: left;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-width: 600px;
+      margin: auto;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <h2 id="loadingText">Loading...</h2>
+</div>
+
+<div id="question" class="hidden">
+  <h2>Apakah cinta ingin bermain bersamaku? 💖</h2>
+  <button onclick="startGame1()">YES</button>
+  <button id="noBtn">NO</button>
+</div>
+
+<div id="game1" class="hidden">
+  <h2>Memory Match 🧠</h2>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="game2" class="hidden">
+  <h2 id="qText"></h2>
+  <button onclick="nextQ()">YES</button>
+  <button id="noBtn2">NO</button>
+</div>
+
+<div id="game3" class="hidden">
+  <h2>Catch Love 💕 (Score: <span id="score">0</span>/10)</h2>
+  <div id="player">🚗</div>
+</div>
+
+<div id="giftScene" class="hidden">
+  <h2>🎁 Hadiah spesial untukmu 💖</h2>
+  <div id="giftBox" style="font-size:80px; cursor:pointer;">🎁</div>
+  <div id="cake" class="hidden" style="font-size:80px; margin-top:20px;">🎂✨</div>
+  <br>
+  <button id="openLetterBtn" class="hidden" onclick="showFinal()">Buka Surat 💌</button>
+</div>
+
+<div id="final" class="hidden">
+  <h2>💌</h2>
+  <pre id="letter"></pre>
+</div>
+
+<audio id="bgMusic" loop src="about-you.mp3"></audio>
+
+<script>
+let isGameOver = false;
+let score = 0;
+
+function stopAllMusic() {
+  // Versi sederhana karena audio sering terhambat kebijakan browser
+  console.log("Music Triggered");
 }
 
-.hidden { display: none; }
+// LOADING
+let percent = 1;
+let loadInterval = setInterval(() => {
+  document.getElementById("loadingText").innerText = "Mempersiapkan hal yang lebih penting dari skripsi... (" + percent + "%)";
+  percent++;
+  if (percent > 100) {
+    clearInterval(loadInterval);
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("question").classList.remove("hidden");
+  }
+}, 30);
 
-button {
-  padding: 14px 18px;
-  font-size: 14px;
+// Tombol lari
+const moveBtn = (btnId) => {
+  let btn = document.getElementById(btnId);
+  btn.style.left = Math.random() * 70 + "%";
+  btn.style.top = Math.random() * 70 + "%";
+};
+document.getElementById("noBtn").onmouseover = () => moveBtn("noBtn");
+document.getElementById("noBtn2").onmouseover = () => moveBtn("noBtn2");
+
+// GAME 1
+function startGame1() {
+  document.getElementById("question").classList.add("hidden");
+  document.getElementById("game1").classList.remove("hidden");
+  let emojis = ["🐱", "🐱", "🐶", "🐶", "🌸", "🌸", "💖", "💖", "😺", "😺", "😹", "😹"];
+  let shuffled = emojis.sort(() => 0.5 - Math.random());
+  let first = null, match = 0;
+
+  shuffled.forEach(e => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.onclick = () => {
+      if (div.innerText || first === div) return;
+      div.innerText = e;
+      if (!first) { first = div; } 
+      else {
+        if (first.innerText === e) {
+          match++;
+          first = null;
+          if (match === 6) setTimeout(startGame2, 500);
+        } else {
+          let temp = first;
+          first = null;
+          setTimeout(() => { div.innerText = ""; temp.innerText = ""; }, 400);
+        }
+      }
+    };
+    document.getElementById("grid").appendChild(div);
+  });
 }
 
-#noBtn { position: absolute; }
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  max-width: 350px;
-  margin: auto;
-  gap: 10px;
+// GAME 2
+let questions = ["Apa aku orang terfavoritmu?", "Mau dapet hadiahnya sekarang?", "Kamu sayang banget kan sama aku?"];
+let qi = 0;
+function startGame2() {
+  document.getElementById("game1").classList.add("hidden");
+  document.getElementById("game2").classList.remove("hidden");
+  document.getElementById("qText").innerText = questions[qi];
+}
+function nextQ() {
+  qi++;
+  if (qi < questions.length) {
+    document.getElementById("qText").innerText = questions[qi];
+  } else {
+    startGame3();
+  }
 }
 
-.card {
-  width: 100%;
-  aspect-ratio: 1/1;
-  font-size: 24px;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+// GAME 3
+function startGame3() {
+  document.getElementById("game2").classList.add("hidden");
+  document.getElementById("game3").classList.remove("hidden");
+  spawn();
 }
 
-#game3 {
-  position: relative;
-  height: 60vh;
-  max-height: 400px;
-  background: #fff;
-  overflow: hidden;
-  touch-action: none; /* FIX */
+function spawn() {
+  if (isGameOver) return;
+  let gameArea = document.getElementById("game3");
+  let item = document.createElement("div");
+  item.className = "falling";
+  let types = ["🍫", "💖", "🌸", "💣"];
+  let t = types[Math.floor(Math.random() * types.length)];
+  item.innerText = t;
+  item.style.left = Math.random() * 90 + "%";
+  gameArea.appendChild(item);
+
+  let fall = setInterval(() => {
+    item.style.top = (item.offsetTop + 5) + "px";
+    let player = document.getElementById("player");
+
+    if (item.offsetTop > gameArea.offsetHeight - 60) {
+      let itemX = item.offsetLeft;
+      let playerX = player.offsetLeft;
+      if (Math.abs(itemX - playerX) < 50) {
+        t === "💣" ? score-- : score++;
+        document.getElementById("score").innerText = score;
+      }
+      clearInterval(fall);
+      item.remove();
+      
+      if (score >= 10 && !isGameOver) {
+        isGameOver = true;
+        showGift();
+      }
+    }
+  }, 40);
+  setTimeout(spawn, 800);
 }
 
-#player {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 35px;
+// Controls Game 3
+document.getElementById("game3").addEventListener("touchmove", (e) => {
+  let x = e.touches[0].clientX - document.getElementById("game3").getBoundingClientRect().left;
+  document.getElementById("player").style.left = x + "px";
+});
+
+function showGift() {
+  document.getElementById("game3").classList.add("hidden");
+  document.getElementById("giftScene").classList.remove("hidden");
+  document.getElementById("giftBox").onclick = function() {
+    this.innerText = "🎁💥";
+    setTimeout(() => {
+      document.getElementById("cake").classList.remove("hidden");
+      document.getElementById("openLetterBtn").classList.remove("hidden");
+    }, 800);
+  };
 }
 
-.falling {
-  position: absolute;
-  top: 0;
-  font-size: 30px;
-}
+function showFinal() {
+  document.getElementById("giftScene").classList.add("hidden");
+  document.getElementById("final").classList.remove("hidden");
+  let music = document.getElementById("bgMusic");
+  music.play().catch(e => console.log("Audio play deferred"));
 
-#letter::after {
-  content: "|";
-  animation: blink 1s infinite;
-}
+  let text = `[ MAGELANG, 15 APRIL 2026 ]
 
-#letter {
-  padding: 10px;
-  font-size: 14px;
-}
 
-#final {
-  background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
-  color: white;
-  height: 100vh;
-  overflow-y: auto;
-  padding: 20px;
-  animation: fadeIn 2s ease;
-}
+UNTUK: MY FAVORITE HUMAN, MY PRETTIEST SOUL.
 
-@keyframes blink {
-  50% {opacity: 0;}
-}
 
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
+DEAR MBG (MY BEAUTIFUL GIRL),
 
-#giftBox {
-  transition: transform 0.5s;
-}
 
-#giftBox:hover {
-  transform: scale(1.2) rotate(10deg);
-}
 
-#cake {
-  animation: popUp 1s ease;
-}
+KITA SUDAH MELEWATI BANYAK HAL YANG BENAR-BENAR "CHAOTIC". DUNIA KADANG TIDAK RAMAH, MASALAH DATANG SEPERTI OMBAK YANG TIDAK ADA HABISNYA, DAN KITA PERNAH BERADA DI TITIK HAMPIR MENYERAH. TAPI LIHAT KITA SEKARANG 
 
+KITA MASIH DI SINI. MASIH BERSAMA.
+
+
+AKU BENAR-BENAR BANGGA MELIHAT BAGAIMANA KAMU BERTAHAN. KAMU ITU DEFINISI REAL DARI "SURVIVOR". MESKIPUN HATI LAGI CAPEK, KAMU TETAP JADI SPPG (SO PERFECT AND PRETTY GIRL) YANG SELALU BISA BIKIN AKU TERSIMPU-SIMPU.
+
+AKU PERNAH BERPIKIR, "IN ANOTHER LIFE, I WOULD FIND YOU SOONER." TAPI DI KEHIDUPAN YANG SEKARANG PUN, AKU BERSYUKUR KITA TETAP BERTAHAN. 
+
+AKU BERHARAP SEMOGA TIDAK ADA LAGI KATA "WHEN YAH" DI ANTARA KITA—KARENA SEKARANG ADALAH WAKTUNYA KITA, BUKAN LAGI TENTANG "KAPAN" KITA AKAN BAHAGIA, TAPI "BAGAIMANA" KITA MENJALANINYA BERSAMA.
+
+
+
+SEMUA "I WISH" YANG PERNAH KITA BISIKKAN SAAT SEDIH, AKU MAU ITU SEMUA MENJADI KENYATAAN MULAI SAAT INI. 
+
+MAKASIH SUDAH MAU TERUS "FIGHT" BARENG AKU MESKIPUN KEADAAN LAGI GAK "SLAY" SAMA SEKALI.
+
+
+
+---
+
+
+
+HAPPY BIRTHDAY, MY PRECIOUS! 
+
+
+
+DI HARI ULANG TAHUNMU INI, AKU BERDOA SEMOGA KAMU SELALU DIKELILINGI HAL-HAL BAIK YANG BIKIN KAMU "FULL SENYUM". SEMOGA LANGKAHMU KE DEPAN DIMUDAHKAN, SEMUA MIMPI BESARMU (DAN MIMPI KITA) TERCAPAI SATU PER SATU. 
+
+
+
+TETAPLAH JADI CAHAYA PALING TERANG DI HIDUPKU. AKU BAKAL SELALU JADI SUPPORT SYSTEM NOMOR SATU YANG SIAP "TB" BUAT KAMU.
+
+
+
+I LOVE YOU LEBIH DARI APAPUN, MY MOON, MY STAR, MY KISAH, MY EVERYTHING.
+
+
+
+SINCERELY,
+
+
+
+[ Your Mass ]`;
+  let i = 0;
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById("letter").innerText += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, 40);
+    }
+  }
+  typeWriter();
+}
+</script>
+</body>
+</html>
 @keyframes popUp {
   from {transform: scale(0);}
   to {transform: scale(1);}
