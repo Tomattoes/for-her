@@ -1,111 +1,1016 @@
 <!DOCTYPE html>
+
 <html lang="id">
+
 <head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta charset="UTF-8">
+
 <title>For My Favorite Human 💖</title>
+
 <style>
+
 body {
+
   margin: 0;
+
   font-family: 'Comic Sans MS', cursive;
+
   text-align: center;
+
   background: linear-gradient(135deg, #ffd6ec, #e0c3fc, #c3f0ff);
+
 }
+
+body {
+
+  touch-action: manipulation;
+
+}
+
+
 
 .hidden { display: none; }
 
+
+
 button {
-  padding: 12px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+
+  padding: 14px 18px;
+
+  font-size: 14px;
+
 }
+
+
+
+
 
 #noBtn {
+
   position: absolute;
+
 }
+
+
 
 .grid {
+
   display: grid;
-  grid-template-columns: repeat(4, 80px);
+
+  grid-template-columns: repeat(4, 1fr);
+
+  max-width: 350px;
+
+  margin: auto;
+
   gap: 10px;
+
   justify-content: center;
+
 }
+
+
 
 .card {
-  width: 80px;
+
+  width: 100%;
+
+  aspect-ratio: 1/1;
+
+  font-size: 24px;
+
   height: 80px;
+
   background: white;
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-  font-size: 30px;
+
   cursor: pointer;
+
 }
 
+
+
 #game3 {
+
   position: relative;
-  height: 400px;
+
+  height: 60vh;
+
+  max-height: 400px;
+
   background: #fff;
+
+  overflow: hidden;
+
 }
 
 #player {
+
   position: absolute;
+
   bottom: 10px;
+
   left: 50%;
-  font-size: 40px;
+
+  transform: translateX(-50%);
+
+  font-size: 35px;
+
 }
+
+
 
 .falling {
+
   position: absolute;
+
   top: 0;
+
   font-size: 30px;
+
 }
+
+
 
 #letter::after {
+
   content: "|";
+
   animation: blink 1s infinite;
+
 }
 
-#letter {
-  max-width: 700px;
-  margin: auto;
-  text-align: left;
-  white-space: pre-wrap;
-  font-size: 16px;
-  line-height: 1.6;
+
+
+  #letter {
+
+  padding: 10px;
+
+  font-size: 14px;
+
 }
+
+
 
 #final {
+
   background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
+
   color: white;
+
   height: 100vh;
+
   overflow: hidden;
+
   position: relative;
+
   animation: fadeIn 2s ease;
+
 }
 
+
+
 #final {
+
   height: 100vh;
+
   overflow-y: auto;
+
   padding: 20px;
+
 }
+
+
 
 @keyframes blink {
+
   50% {opacity: 0;}
+
 }
+
+
 
 @keyframes fadeIn {
+
   from {opacity: 0;}
+
   to {opacity: 1;}
+
 }
+
+
 
 #giftBox {
+
   transition: transform 0.5s;
+
 }
 
+
+
 #giftBox:hover {
+
   transform: scale(1.2) rotate(10deg);
+
+}
+
+
+
+#cake {
+
+  animation: popUp 1s ease;
+
+}
+
+
+
+@keyframes popUp {
+
+  from {transform: scale(0);}
+
+  to {transform: scale(1);}
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<!-- 1 LOADING -->
+
+<div id="loading">
+
+  <h2 id="loadingText">Loading...</h2>
+
+</div>
+
+
+
+<!-- 2 PERTANYAAN -->
+
+<div id="question" class="hidden">
+
+  <h2>Apakah cinta ingin bermain bersamaku? 💖</h2>
+
+  <button onclick="startGame1()">YES</button>
+
+  <button id="noBtn">NO</button>
+
+</div>
+
+
+
+<!-- 3 GAME MEMORY -->
+
+<div id="game1" class="hidden">
+
+  <h2>Meme Memory Match 🧠</h2>
+
+  <div class="grid" id="grid"></div>
+
+</div>
+
+
+
+<!-- 4 GAME YES NO -->
+
+<div id="game2" class="hidden">
+
+  <h2 id="qText"></h2>
+
+  <button onclick="nextQ()">YES</button>
+
+  <button id="noBtn2">NO</button>
+
+</div>
+
+
+
+<!-- 5 GAME TANGKAP -->
+
+<div id="game3" class="hidden">
+
+  <h2>Catch Love 💕 (Score: <span id="score">0</span>)</h2>
+
+  <div id="player">🚗</div>
+
+</div>
+
+
+
+<div id="giftScene" class="hidden">
+
+  <h2>🎁 Kamu mendapatkan hadiah dari orang spesial 💖</h2>
+
+
+
+  <div id="giftBox" style="font-size:80px; cursor:pointer;">
+
+    🎁
+
+  </div>
+
+
+
+  <div id="cake" class="hidden" style="font-size:80px; margin-top:20px;">
+
+    🎂✨ 20
+
+  </div>
+
+
+
+  <br>
+
+  <button id="openLetterBtn" class="hidden" onclick="showFinal()">
+
+    Buka Hadiah 💌
+
+  </button>
+
+</div>
+
+
+
+<!-- 6 FINAL -->
+
+<div id="final" class="hidden">
+
+  <h2>💌</h2>
+
+  <pre id="letter"></pre>
+
+</div>
+
+
+
+<!-- GAME 1 -->
+
+<audio id="g1_music" loop src="game1.mp3"></audio>
+
+<audio id="match_sound" src="correct.mp3"></audio>
+
+<audio id="wrong_sound" src="wrong.mp3"></audio>
+
+
+
+<!-- GAME 2 -->
+
+<audio id="g2_music" loop src="game2.mp3"></audio>
+
+
+
+<!-- GAME 3 -->
+
+<audio id="g3_music" loop src="game3.mp3"></audio>
+
+<audio id="bgMusic" loop src="about-you.mp3"></audio>
+
+
+
+<script>
+
+
+
+function stopAllMusic(){
+
+  document.querySelectorAll("audio").forEach(a=>{
+
+    a.pause();
+
+    a.currentTime = 0;
+
+  });
+
+}
+
+
+
+function playMusic(id, volume=0.5){
+
+  let a = document.getElementById(id);
+
+  if(a){
+
+    a.volume = volume;
+
+    a.play().catch(()=>{});
+
+  }
+
+}
+
+
+
+// ---------------- LOADING ----------------
+
+let percent = 1;
+
+let loadInterval = setInterval(()=>{
+
+  document.getElementById("loadingText").innerText =
+
+    "Mempersiapkan hal yang lebih penting dari skripsi... ("+percent+"%)";
+
+  percent++;
+
+  if(percent>100){
+
+    clearInterval(loadInterval);
+
+    document.getElementById("loading").classList.add("hidden");
+
+    document.getElementById("question").classList.remove("hidden");
+
+  }
+
+},40);
+
+
+
+// NO BUTTON LARI
+
+let noBtn = document.getElementById("noBtn");
+
+noBtn.onmouseover = ()=>{
+
+  noBtn.style.left = Math.random()*80+"%";
+
+  noBtn.style.top = Math.random()*80+"%";
+
+};
+
+
+
+// ---------------- GAME 1 MEMORY ----------------
+
+let emojis = ["🐱","🐱","😺","😺","😹","😹","🐶","🐶","🌸","🌸","💖","💖"];
+
+let shuffled = emojis.sort(()=>0.5-Math.random());
+
+let first=null, second=null, match=0;
+
+
+
+function startGame1(){
+
+  stopAllMusic();
+
+  playMusic("g1_music", 0.4);
+
+
+
+  document.getElementById("question").classList.add("hidden");
+
+  document.getElementById("game1").classList.remove("hidden");
+
+
+
+  let grid = document.getElementById("grid");
+
+  shuffled.forEach((e,i)=>{
+
+    let div = document.createElement("div");
+
+    div.className="card";
+
+    div.dataset.value=e;
+
+    div.onclick=()=>{
+
+      div.innerText=e;
+
+      if(!first){ first=div; }
+
+      else{
+
+        second=div;
+
+        if(first.dataset.value===second.dataset.value){
+
+          playMusic("match_sound", 1);
+
+
+
+          match++;
+
+          alert("Kita cocok terus 😎💖");
+
+          first=null; second=null;
+
+          if(match===6){
+
+            document.getElementById("game1").classList.add("hidden");
+
+            startGame2();
+
+          }
+
+        }else{
+
+            playMusic("wrong_sound", 1);
+
+
+
+            setTimeout(()=>{
+
+            first.innerText="";
+
+            second.innerText="";
+
+            first=null; second=null;
+
+          },500);
+
+        }
+
+      }
+
+    };
+
+    grid.appendChild(div);
+
+  });
+
+}
+
+
+
+// ---------------- GAME 2 ----------------
+
+let questions = [
+
+"Apa aku orang terfavoritmu?",
+
+"Mau dapet hadiahnya sekarang?",
+
+"Kalau aku jadi hantu kamu mau aku ikutin ke mana-mana supaya kita nggak terpisahkan, ya??",
+
+"Kalau aku lupa mandi kamu tetep mau cium pipi aku tiap pagi, ya??",
+
+"Kamu sayang banget banget kan sama aku?"
+
+];
+
+let qi=0;
+
+
+
+function startGame2(){
+
+  stopAllMusic();
+
+  playMusic("g2_music", 1);
+
+
+
+  document.getElementById("game2").classList.remove("hidden");
+
+  document.getElementById("qText").innerText=questions[qi];
+
+}
+
+
+
+function nextQ(){
+
+  qi++;
+
+  if(qi<questions.length){
+
+    document.getElementById("qText").innerText=questions[qi];
+
+  }else{
+
+    document.getElementById("game2").classList.add("hidden");
+
+    startGame3();
+
+  }
+
+}
+
+
+
+// tombol no lari
+
+let noBtn2 = document.getElementById("noBtn2");
+
+noBtn2.onmouseover = ()=>{
+
+  noBtn2.style.position="absolute";
+
+  noBtn2.style.left = Math.random()*80+"%";
+
+  noBtn2.style.top = Math.random()*80+"%";
+
+};
+
+
+
+// ---------------- GAME 3 ----------------
+
+let score=0;
+
+let player=document.getElementById("player");
+
+
+
+function movePlayer(x) {
+
+  let game = document.getElementById("game3");
+
+  let max = game.offsetWidth - player.offsetWidth;
+
+
+
+  let newLeft = x - (player.offsetWidth / 2);
+
+
+
+  if(newLeft < 0) newLeft = 0;
+
+  if(newLeft > max) newLeft = max;
+
+
+
+  player.style.left = newLeft + "px";
+
+}
+
+
+
+// TOUCH (HP)
+
+document.getElementById("game3").addEventListener("touchmove", (e) => {
+
+  movePlayer(e.touches[0].clientX);
+
+});
+
+
+
+// CLICK (biar bisa tap juga)
+
+document.getElementById("game3").addEventListener("click", (e) => {
+
+  movePlayer(e.clientX);
+
+});
+
+
+
+// KEYBOARD (tetap support laptop)
+
+document.addEventListener("keydown", (e) => {
+
+  let left = player.offsetLeft;
+
+  if (e.key === "ArrowLeft") player.style.left = (left - 30) + "px";
+
+  if (e.key === "ArrowRight") player.style.left = (left + 30) + "px";
+
+});
+
+
+
+function startGame3(){
+
+  stopAllMusic();
+
+  playMusic("g3_music", 0.4);
+
+
+
+  document.getElementById("game3").classList.remove("hidden");
+
+  spawn();
+
+}
+
+
+
+function spawn(){
+
+  let item=document.createElement("div");
+
+  item.className="falling";
+
+  let types=["🍫","💖","🌸","💣"];
+
+  let t=types[Math.floor(Math.random()*types.length)];
+
+  item.innerText=t;
+
+  item.style.left=Math.random()*90+"%";
+
+  document.getElementById("game3").appendChild(item);
+
+
+
+  let fall=setInterval(()=>{
+
+    item.style.top=(item.offsetTop+5)+"px";
+
+
+
+    if(item.offsetTop>350){
+
+      if(Math.abs(item.offsetLeft-player.offsetLeft)<50){
+
+        if(t==="💣") score--;
+
+        else score++;
+
+        document.getElementById("score").innerText=score;
+
+      }
+
+      item.remove();
+
+      clearInterval(fall);
+
+    }
+
+
+
+    if(score>=10){
+
+      document.getElementById("game3").classList.add("hidden");
+
+      showGift();
+
+    }
+
+  },50);
+
+
+
+  setTimeout(spawn,800);
+
+  // ... (Bagian atas kode tetap sama sampai fungsi showGift)
+
+}
+
+
+
+function showGift() {
+
+  stopAllMusic();
+
+
+
+  document.getElementById("game3").classList.add("hidden");
+
+  document.getElementById("giftScene").classList.remove("hidden");
+
+
+
+  let box = document.getElementById("giftBox");
+
+  let cake = document.getElementById("cake");
+
+  let btn = document.getElementById("openLetterBtn");
+
+
+
+  box.onclick = () => {
+
+    // Efek kado kebuka
+
+    box.innerText = "🎁💥";
+
+
+
+    setTimeout(() => {
+
+      // Tampilkan kue dan teks
+
+      cake.classList.remove("hidden");
+
+      
+
+      // Cek agar teks tidak duplikat jika diklik berkali-kali
+
+      if (!document.getElementById("congratsText")) {
+
+        let text = document.createElement("h2");
+
+        text.id = "congratsText";
+
+        text.innerText = "🎉 Selamat Ulang Tahun My Fv Human 🎂✨";
+
+        text.style.marginTop = "20px";
+
+        text.style.animation = "fadeIn 2s ease";
+
+        document.getElementById("giftScene").appendChild(text);
+
+      }
+
+
+
+      // Munculkan tombol buka surat
+
+      btn.classList.remove("hidden");
+
+    }, 800);
+
+  };
+
+}
+
+
+
+function showFinal() {
+
+  stopAllMusic();
+
+
+
+  // Hapus semua tampilan lain
+
+  document.body.innerHTML = `
+
+    <div id="final" style="
+
+      background: linear-gradient(180deg, #0f0c29, #302b63, #24243e);
+
+      color: white;
+
+      height: 100vh;
+
+      overflow-y: auto;
+
+      padding: 20px;
+
+    ">
+
+      <h2>💌</h2>
+
+      <pre id="letter" style="
+
+        max-width:700px;
+
+        margin:auto;
+
+        white-space:pre-wrap;
+
+        line-height:1.6;
+
+        font-size:16px;
+
+      "></pre>
+
+
+
+      <audio id="bgMusic" src="about-you.mp3" loop></audio>
+
+    </div>
+
+  `;
+
+
+
+  // PLAY MUSIC (karena ini hasil klik user → pasti boleh)
+
+  let music = document.getElementById("bgMusic");
+
+  music.volume = 0.7;
+
+  music.play();
+
+
+
+  let text = `[ MAGELANG, 15 APRIL 2026 ]
+
+
+
+UNTUK: MY FAVORITE HUMAN, MY PRETTIEST SOUL.
+
+
+
+DEAR MBG (MY BEAUTIFUL GIRL),
+
+
+
+KITA SUDAH MELEWATI BANYAK HAL YANG BENAR-BENAR "CHAOTIC". DUNIA KADANG 
+
+TIDAK RAMAH, MASALAH DATANG SEPERTI OMBAK YANG TIDAK ADA HABISNYA, DAN 
+
+KITA PERNAH BERADA DI TITIK HAMPIR MENYERAH. TAPI LIHAT KITA SEKARANG. 
+
+KITA MASIH DI SINI. MASIH BERSAMA.
+
+
+
+AKU BENAR-BENAR BANGGA MELIHAT BAGAIMANA KAMU BERTAHAN. KAMU ITU DEFINISI REAL DARI "SURVIVOR".
+
+MESKIPUN HATI LAGI CAPEK, KAMU TETAP JADI SPPG 
+
+(SO PERFECT AND PRETTY GIRL) YANG SELALU BISA BIKIN AKU TERSIMPU-SIMPU.
+
+
+
+AKU PERNAH BERPIKIR, "IN ANOTHER LIFE, I WOULD FIND YOU SOONER." TAPI 
+
+DI KEHIDUPAN YANG SEKARANG PUN, AKU BERSYUKUR KITA TETAP BERTAHAN. 
+
+AKU BERHARAP SEMOGA TIDAK ADA LAGI KATA "WHEN YAH" DI ANTARA KITA—KARENA 
+
+SEKARANG ADALAH WAKTUNYA KITA, BUKAN LAGI TENTANG "KAPAN" KITA AKAN 
+
+BAHAGIA, TAPI "BAGAIMANA" KITA MENJALANINYA BERSAMA.
+
+
+
+SEMUA "I WISH" YANG PERNAH KITA BISIKKAN SAAT SEDIH, AKU MAU ITU SEMUA 
+
+MENJADI KENYATAAN MULAI SAAT INI. MAKASIH SUDAH MAU TERUS "FIGHT" BARENG 
+
+AKU MESKIPUN KEADAAN LAGI GAK "SLAY" SAMA SEKALI.
+
+
+
+---
+
+
+
+HAPPY BIRTHDAY, MY PRECIOUS! 
+
+
+
+DI HARI ULANG TAHUNMU INI, AKU BERDOA SEMOGA KAMU SELALU DIKELILINGI 
+
+HAL-HAL BAIK YANG BIKIN KAMU "FULL SENYUM". SEMOGA LANGKAHMU KE DEPAN 
+
+DIMUDAHKAN, SEMUA MIMPI BESARMU (DAN MIMPI KITA) TERCAPAI SATU PER SATU. 
+
+
+
+TETAPLAH JADI CAHAYA PALING TERANG DI HIDUPKU. AKU BAKAL SELALU JADI 
+
+SUPPORT SYSTEM NOMOR SATU YANG SIAP "TB" BUAT KAMU.
+
+
+
+I LOVE YOU LEBIH DARI APAPUN, MY MOON, MY STAR, MY KISAH, MY EVERYTHING.
+
+
+
+SINCERELY,
+
+
+
+[ Your Mass ]`;
+
+ 
+
+  let i = 0;
+
+  let letter = document.getElementById("letter");
+
+
+
+  function typeWriter() {
+
+    if (i < text.length) {
+
+      letter.innerText += text.charAt(i);
+
+      i++;
+
+      setTimeout(typeWriter, 50);
+
+    }
+
+  }
+
+
+
+  typeWriter();
+
+}
+
+</script>
+
+</body>
+
+</html>  transform: scale(1.2) rotate(10deg);
 }
 
 #cake {
